@@ -11,26 +11,31 @@
     </div>
 </div>
 
-<!-- Métricas dinâmicas do site -->
+<!-- Cards interativos -->
 <div class="grid md:grid-cols-3 gap-8 mt-16">
-    <div class="card p-6 text-center hover:scale-105 transition cursor-pointer">
+    <!-- Card Vulnerabilidades -> redireciona para /lista/ -->
+    <a href="/lista/" class="card p-6 text-center hover:scale-105 transition cursor-pointer block">
         <i class="fas fa-bug text-5xl text-red-500"></i>
         <h3 class="text-xl font-bold mt-4">Vulnerabilidades</h3>
         <p class="text-3xl font-bold text-blue-600 mt-2">{{ total_vulnerabilidades }}</p>
         <p class="text-gray-500 mt-2">ameaças catalogadas</p>
-    </div>
-    <div class="card p-6 text-center hover:scale-105 transition cursor-pointer">
-        <i class="fas fa-comments text-5xl text-green-500"></i>
-        <h3 class="text-xl font-bold mt-4">Comentários</h3>
-        <p class="text-3xl font-bold text-blue-600 mt-2">{{ total_comentarios }}</p>
-        <p class="text-gray-500 mt-2">contribuições da comunidade</p>
-    </div>
-    <div class="card p-6 text-center hover:scale-105 transition cursor-pointer">
+    </a>
+
+    <!-- Card Sobre -> redireciona para /about/ (substitui os comentários) -->
+    <a href="/about/" class="card p-6 text-center hover:scale-105 transition cursor-pointer block">
+        <i class="fas fa-info-circle text-5xl text-blue-500"></i>
+        <h3 class="text-xl font-bold mt-4">Sobre o Projeto</h3>
+        <p class="text-gray-600 mt-2">Conheça os autores, as tecnologias e o propósito do BlueShield.</p>
+        <p class="text-blue-600 mt-4 font-semibold">Saber mais →</p>
+    </a>
+
+    <!-- Card Sugestões -> redireciona para /sugestoes/ -->
+    <a href="/sugestoes/" class="card p-6 text-center hover:scale-105 transition cursor-pointer block">
         <i class="fas fa-lightbulb text-5xl text-yellow-500"></i>
         <h3 class="text-xl font-bold mt-4">Sugestões</h3>
         <p class="text-3xl font-bold text-blue-600 mt-2">{{ total_sugestoes }}</p>
         <p class="text-gray-500 mt-2">novas ideias para o catálogo</p>
-    </div>
+    </a>
 </div>
 
 <div class="mt-16 text-center">
