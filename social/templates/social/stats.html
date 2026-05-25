@@ -1,50 +1,76 @@
 {% extends 'social/base.html' %}
 {% block title %}Estatísticas{% endblock %}
 {% block content %}
-<h1 class="text-3xl font-bold text-gray-800 mb-8 border-l-4 border-blue-600 pl-4">📊 Estatísticas de Segurança</h1>
+<h1 class="text-3xl font-bold text-gray-800 mb-8 border-l-4 border-blue-600 pl-4 flex items-center gap-2"><i class="fas fa-chart-pie"></i> Estatísticas de Segurança</h1>
 <div class="grid md:grid-cols-2 gap-8">
-    <div>
+    <div class="card p-6">
         <canvas id="riskChart" width="400" height="400"></canvas>
     </div>
     <div class="space-y-4">
         <div class="card p-6 text-center">
             <div class="text-5xl font-bold text-blue-600">{{ total }}</div>
-            <p class="text-gray-600 mt-2">Total de ameaças</p>
+            <p><i class="fas fa-database"></i> Total de ameaças</p>
         </div>
         <div class="card p-6 text-center">
             <div class="text-5xl font-bold text-red-600">{{ alto }}</div>
-            <p class="text-gray-600 mt-2">Ameaças de <strong>Risco Alto</strong></p>
+            <p><i class="fas fa-skull-crossbones"></i> Risco Alto</p>
         </div>
         <div class="card p-6 text-center">
             <div class="text-5xl font-bold text-yellow-600">{{ medio }}</div>
-            <p class="text-gray-600 mt-2">Ameaças de <strong>Risco Médio</strong></p>
+            <p><i class="fas fa-exclamation-triangle"></i> Risco Médio</p>
         </div>
         <div class="card p-6 text-center">
             <div class="text-5xl font-bold text-green-600">{{ baixo }}</div>
-            <p class="text-gray-600 mt-2">Ameaças de <strong>Risco Baixo</strong></p>
+            <p><i class="fas fa-check-circle"></i> Risco Baixo</p>
         </div>
     </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <script>
-    const ctx = document.getElementById('riskChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Alto', 'Médio', 'Baixo'],
-            datasets: [{
-                data: [{{ alto }}, {{ medio }}, {{ baixo }}],
-                backgroundColor: ['#ef4444', '#f59e0b', '#10b981'],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'bottom' },
-                title: { display: true, text: 'Distribuição por Nível de Risco' }
-            }
-        }
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('riskChart').getContext('2d');
+        const total = {{ total }};
+        const alto = {{ alto }};
+        const medio = {{ medio }};
+        const baixo = {{ baixo }};
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Alto', 'Médio', 'Baixo'],
+                datasets: [{
+                    data: [alto, medio, baixo],
+                    backgroundColor: ['#ef4444', '#f59e0b', '#10b981'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                const value = tooltipItem.raw;
+                                const percent = ((value / total) * 100).toFixed(1);
+                                return `${tooltipItem.label}: ${value} (${percent}%)`;
+                            }
+                        }
+                    },
+                    datalabels: {
+                        formatter: function(value, context) {
+                            const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                            const percent = ((value / total) * 100).toFixed(1);
+                            return percent + '%';
+                        },
+                        color: 'white',
+                        font: { weight: 'bold', size: 16 }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        });
     });
 </script>
 {% endblock %}
