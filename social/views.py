@@ -4,7 +4,12 @@ from django.http import JsonResponse
 from .models import Vulnerabilidade, Comentario, SugestaoVulnerabilidade
 
 def home(request):
-    return render(request, 'social/home.html')
+    context = {
+        'total_vulnerabilidades': Vulnerabilidade.objects.count(),
+        'total_comentarios': Comentario.objects.count(),
+        'total_sugestoes': SugestaoVulnerabilidade.objects.count(),
+    }
+    return render(request, 'social/home.html', context)
 
 def lista_vulnerabilidades(request):
     qs = Vulnerabilidade.objects.all()
@@ -15,18 +20,14 @@ def lista_vulnerabilidades(request):
     if risco:
         qs = qs.filter(risco=risco)
     qs = qs.order_by('risco', 'nome')
-
-    # Se foi feita pesquisa (q) e não há resultados, redireciona
     if q and not qs.exists():
         return redirect(f'/nao-encontrado/?q={q}')
-
     return render(request, 'social/lista.html', {'vulnerabilidades': qs})
 
 def detalhe(request, id):
     vuln = get_object_or_404(Vulnerabilidade, id=id)
     vuln.views += 1
     vuln.save(update_fields=['views'])
-
     if request.method == 'POST':
         autor = request.POST.get('autor', 'Anónimo').strip()
         texto = request.POST.get('texto', '').strip()
@@ -37,7 +38,6 @@ def detalhe(request, id):
                 texto=texto
             )
         return redirect('detalhe', id=vuln.id)
-
     comentarios = vuln.comentarios.all().order_by('-criado_em')
     return render(request, 'social/detalhe.html', {'vuln': vuln, 'comentarios': comentarios})
 
