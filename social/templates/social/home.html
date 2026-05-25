@@ -1,0 +1,21 @@
+{% extends 'social/base.html' %}
+{% block title %}Catálogo de Ameaças{% endblock %}
+{% block content %}
+<h1 class="text-3xl font-bold text-gray-800 mb-2 border-l-4 border-blue-600 pl-4">📋 Catálogo de Ameaças Cibernéticas</h1>
+<p class="text-gray-600 mb-8 ml-4">Portal educativo sobre as principais ameaças informáticas e as melhores formas de as evitar.</p>
+<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for vuln in vulnerabilidades %}
+    <div class="card p-5">
+        <div class="flex justify-between items-start">
+            <h2 class="text-xl font-semibold text-gray-800">{{ vuln.icone }} {{ vuln.nome }}</h2>
+            <span class="badge 
+                {% if vuln.risco == 'A' %}risk-high{% elif vuln.risco == 'M' %}risk-medium{% else %}risk-low{% endif %}">
+                {{ vuln.get_risco_display }}
+            </span>
+        </div>
+        <p class="text-gray-600 mt-3">{{ vuln.descricao|truncatewords:30 }}</p>
+        <a href="/vulnerabilidade/{{ vuln.id }}" class="inline-block mt-4 text-blue-600 hover:text-blue-800 font-medium">🔍 Ver detalhes →</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

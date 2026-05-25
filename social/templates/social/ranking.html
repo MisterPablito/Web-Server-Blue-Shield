@@ -1,0 +1,40 @@
+{% extends 'social/base.html' %}
+{% block title %}Ranking{% endblock %}
+{% block content %}
+<h1 class="text-3xl font-bold text-gray-800 mb-6 border-l-4 border-blue-600 pl-4">🏆 Ranking de Vulnerabilidades</h1>
+<div class="space-y-8">
+    <div>
+        <h2 class="text-2xl font-bold text-red-700">🔴 Risco Alto</h2>
+        <div class="mt-2 space-y-2">
+            {% for vuln in alto_rank %}
+            <div class="card p-3 flex justify-between items-center">
+                <div><span class="font-bold">{{ vuln.icone }} {{ vuln.nome }}</span>{% if forloop.first %}<span class="ml-2 text-yellow-500 text-sm">👑 Mais perigosa</span>{% endif %}</div>
+                <span>👁️ {{ vuln.views }}</span>
+            </div>
+            {% empty %}<p>Nenhuma ameaça de risco alto.</p>{% endfor %}
+        </div>
+    </div>
+    <div>
+        <h2 class="text-2xl font-bold text-yellow-700">🟠 Risco Médio</h2>
+        <div class="mt-2 space-y-2">
+            {% for vuln in medio_rank %}
+            <div class="card p-3 flex justify-between items-center">
+                <div><span class="font-bold">{{ vuln.icone }} {{ vuln.nome }}</span>{% if forloop.first %}<span class="ml-2 text-yellow-500 text-sm">👑 Mais perigosa</span>{% endif %}</div>
+                <span>👁️ {{ vuln.views }}</span>
+            </div>
+            {% empty %}<p>Nenhuma ameaça de risco médio.</p>{% endfor %}
+        </div>
+    </div>
+    <div>
+        <h2 class="text-2xl font-bold text-green-700">🟢 Risco Baixo</h2>
+        <div class="mt-2 space-y-2">
+            {% for vuln in baixo_rank %}
+            <div class="card p-3 flex justify-between items-center">
+                <div><span class="font-bold">{{ vuln.icone }} {{ vuln.nome }}</span>{% if forloop.first %}<span class="ml-2 text-yellow-500 text-sm">👑 Mais perigosa</span>{% endif %}</div>
+                <span>👁️ {{ vuln.views }}</span>
+            </div>
+            {% empty %}<p>Nenhuma ameaça de risco baixo.</p>{% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
