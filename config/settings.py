@@ -35,7 +35,7 @@ MIDDLEWARE = [
 ]
 
 # URLs principal
-ROOT_URLCONF = 'config.urls'   # <-- LINHA IMPORTANTE (estava a faltar)
+ROOT_URLCONF = 'config.urls'
 
 # Templates
 TEMPLATES = [
@@ -55,27 +55,27 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# Base de dados (MySQL via Docker, por enquanto mantenha SQLite para testes)
-# Como ainda não tem o MySQL a correr, use SQLite temporariamente
+# Base de dados MySQL (usando variáveis de ambiente do .env)
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST'),
+        'PORT': env('DB_PORT'),
     }
 }
-# Quando tiver o Docker pronto, pode comentar o de cima e descomentar o MySQL:
+
+# (Opcional) Se quiser voltar a SQLite para testes, comente o bloco acima e descomente abaixo:
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': env('DB_NAME'),
-#         'USER': env('DB_USER'),
-#         'PASSWORD': env('DB_PASSWORD'),
-#         'HOST': env('DB_HOST'),
-#         'PORT': env('DB_PORT'),
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
 
-# Validação de passwords (mantenha como está)
+# Validação de passwords
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
