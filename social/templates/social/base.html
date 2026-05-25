@@ -25,12 +25,19 @@
 <body>
     <nav class="bg-blue-800 text-white shadow-lg sticky top-0 z-50">
         <div class="container mx-auto px-4 py-4 flex flex-wrap justify-between items-center">
-            <a href="/" class="text-2xl font-bold flex items-center gap-2"><i class="fas fa-shield-alt"></i> BlueShield</a>
-            <div class="flex items-center gap-4">
+            <!-- Lado esquerdo: logótipo + links principais -->
+            <div class="flex items-center space-x-6">
+                <a href="/" class="text-2xl font-bold flex items-center gap-2"><i class="fas fa-shield-alt"></i> BlueShield</a>
                 <div class="space-x-4 text-sm sm:text-base">
                     <a href="/" class="hover:text-blue-200 transition {% if request.path == '/' %}nav-active{% endif %}"><i class="fas fa-home"></i> Início</a>
                     <a href="/lista/" class="hover:text-blue-200 transition {% if request.path == '/lista/' %}nav-active{% endif %}"><i class="fas fa-list"></i> Vulnerabilidades</a>
                     <a href="/ranking/" class="hover:text-blue-200 transition {% if request.path == '/ranking/' %}nav-active{% endif %}"><i class="fas fa-trophy"></i> Ranking</a>
+                </div>
+            </div>
+
+            <!-- Lado direito: Sobre + Sugerir + Login + barra de pesquisa -->
+            <div class="flex items-center gap-4">
+                <div class="space-x-4 text-sm sm:text-base">
                     <a href="/about/" class="hover:text-blue-200 transition {% if request.path == '/about/' %}nav-active{% endif %}"><i class="fas fa-info-circle"></i> Sobre</a>
                     <a href="/sugestoes/" class="hover:text-blue-200 transition"><i class="fas fa-lightbulb"></i> Sugerir</a>
                 </div>
@@ -44,6 +51,7 @@
                 </form>
             </div>
         </div>
+        <!-- Barra de pesquisa para telemóvel (aparece abaixo) -->
         <div class="md:hidden px-4 pb-3">
             <form action="/lista/" method="get" class="relative">
                 <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
@@ -56,10 +64,8 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- RODAPÉ INSTITUCIONAL COMPLETO -->
     <footer class="bg-gray-900 text-gray-300 mt-16">
         <div class="container mx-auto px-6 py-10">
-            <!-- Informação académica centralizada -->
             <div class="max-w-4xl mx-auto text-center">
                 <div class="flex justify-center items-center gap-2 text-sm text-gray-400 mb-3">
                     <span class="w-12 h-px bg-gray-700"></span>
@@ -81,8 +87,6 @@
                     <span class="w-12 h-px bg-gray-700"></span>
                 </div>
             </div>
-
-            <!-- Linha final de copyright e aviso educativo -->
             <div class="border-t border-gray-800 mt-8 pt-6 text-center">
                 <p class="text-sm">
                     &copy; <span id="currentYear"></span> <span class="font-semibold text-white">BlueShield</span> • Projeto académico de cibersegurança
@@ -98,18 +102,15 @@
     <div id="backToTop" class="back-to-top"><i class="fas fa-arrow-up"></i></div>
     
     <script>
-        // Botão "Voltar ao topo"
         const btn = document.getElementById('backToTop');
         if (btn) {
             window.addEventListener('scroll', () => btn.style.display = window.scrollY > 200 ? 'flex' : 'none');
             btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
         }
-        // Ano dinâmico no footer
         const yearSpan = document.getElementById('currentYear');
         if (yearSpan) yearSpan.innerText = new Date().getFullYear();
     </script>
 
-    <!-- Autocomplete da barra de pesquisa -->
     <script>
         const searchInput = document.getElementById('searchInput');
         const suggestionsBox = document.getElementById('searchSuggestions');
