@@ -1,0 +1,20 @@
+{% extends 'social/base.html' %}
+{% block title %}Vulnerabilidade não encontrada{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto card p-8 text-center animate-fade-in-up">
+    <i class="fas fa-search text-7xl text-gray-400 mb-4"></i>
+    <h1 class="text-3xl font-bold text-red-600">Vulnerabilidade não encontrada</h1>
+    <p class="mt-2 text-gray-700">A pesquisa por <strong>"{{ termo }}"</strong> não retornou nenhum resultado no nosso catálogo.</p>
+    <p class="mt-2 text-gray-600">Acha que esta ameaça deveria estar aqui? Sugira-a!</p>
+    <a href="{% url 'sugestoes' %}" class="mt-6 inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Ir para página de sugestões</a>
+    <div class="mt-8 p-4 bg-gray-50 rounded-lg">
+        <h3 class="font-bold">Ou preencha o formulário rápido:</h3>
+        <form method="post" action="{% url 'sugestoes' %}" class="mt-2 space-y-2">
+            {% csrf_token %}
+            <input type="hidden" name="nome" value="{{ termo }}">
+            <textarea name="descricao" rows="2" placeholder="Descreva brevemente esta vulnerabilidade..." class="w-full p-2 border rounded"></textarea>
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Enviar sugestão</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

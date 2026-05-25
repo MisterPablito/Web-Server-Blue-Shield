@@ -1,6 +1,7 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
-from .models import Vulnerabilidade
+from django.http import JsonResponse
+from .models import Vulnerabilidade, Comentario, SugestaoVulnerabilidade
 
 def home(request):
     return render(request, 'social/home.html')
@@ -14,13 +15,31 @@ def lista_vulnerabilidades(request):
     if risco:
         qs = qs.filter(risco=risco)
     qs = qs.order_by('risco', 'nome')
+
+    # Se foi feita pesquisa (q) e não há resultados, redireciona
+    if q and not qs.exists():
+        return redirect(f'/nao-encontrado/?q={q}')
+
     return render(request, 'social/lista.html', {'vulnerabilidades': qs})
 
 def detalhe(request, id):
     vuln = get_object_or_404(Vulnerabilidade, id=id)
     vuln.views += 1
     vuln.save(update_fields=['views'])
-    return render(request, 'social/detalhe.html', {'vuln': vuln})
+
+    if request.method == 'POST':
+        autor = request.POST.get('autor', 'Anónimo').strip()
+        texto = request.POST.get('texto', '').strip()
+        if texto:
+            Comentario.objects.create(
+                vulnerabilidade=vuln,
+                autor=autor if autor else 'Anónimo',
+                texto=texto
+            )
+        return redirect('detalhe', id=vuln.id)
+
+    comentarios = vuln.comentarios.all().order_by('-criado_em')
+    return render(request, 'social/detalhe.html', {'vuln': vuln, 'comentarios': comentarios})
 
 def ranking(request):
     alto_qs = Vulnerabilidade.objects.filter(risco='A').order_by('-views', '-created_at')
@@ -38,6 +57,36 @@ def ranking(request):
 
 def about(request):
     return render(request, 'social/about.html')
+
+def sugestoes(request):
+    if request.method == 'POST':
+        nome = request.POST.get('nome')
+        descricao = request.POST.get('descricao')
+        risco = request.POST.get('risco', '')
+        mitigacao = request.POST.get('mitigacao', '')
+        email = request.POST.get('email', '')
+        if nome and descricao:
+            SugestaoVulnerabilidade.objects.create(
+                nome=nome,
+                descricao=descricao,
+                risco=risco,
+                mitigacao=mitigacao,
+                email_contacto=email
+            )
+            return redirect('sugestoes')
+    sugestoes_lista = SugestaoVulnerabilidade.objects.all().order_by('-criado_em')
+    return render(request, 'social/sugestoes.html', {'sugestoes': sugestoes_lista})
+
+def api_sugestao_nomes(request):
+    termo = request.GET.get('q', '')
+    if len(termo) < 1:
+        return JsonResponse([], safe=False)
+    nomes = Vulnerabilidade.objects.filter(nome__istartswith=termo).values_list('nome', flat=True)[:10]
+    return JsonResponse(list(nomes), safe=False)
+
+def nao_encontrado(request):
+    termo = request.GET.get('q', '')
+    return render(request, 'social/nao_encontrado.html', {'termo': termo})
 
 def register_error(request):
     return render(request, 'registration/register_error.html')

@@ -27,29 +27,27 @@
         <div class="container mx-auto px-4 py-4 flex flex-wrap justify-between items-center">
             <a href="/" class="text-2xl font-bold flex items-center gap-2"><i class="fas fa-shield-alt"></i> BlueShield</a>
             <div class="flex items-center gap-4">
-                <!-- Barra de pesquisa (desktop) -->
-                <form action="/lista/" method="get" class="hidden md:block">
-                    <div class="relative">
-                        <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
-                        <input type="text" name="q" placeholder="Pesquisar ameaça..." class="bg-blue-700 text-white placeholder-gray-300 rounded-full py-1.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-white">
-                    </div>
-                </form>
                 <div class="space-x-4 text-sm sm:text-base">
                     <a href="/" class="hover:text-blue-200 transition {% if request.path == '/' %}nav-active{% endif %}"><i class="fas fa-home"></i> Início</a>
                     <a href="/lista/" class="hover:text-blue-200 transition {% if request.path == '/lista/' %}nav-active{% endif %}"><i class="fas fa-list"></i> Vulnerabilidades</a>
                     <a href="/ranking/" class="hover:text-blue-200 transition {% if request.path == '/ranking/' %}nav-active{% endif %}"><i class="fas fa-trophy"></i> Ranking</a>
                     <a href="/about/" class="hover:text-blue-200 transition {% if request.path == '/about/' %}nav-active{% endif %}"><i class="fas fa-info-circle"></i> Sobre</a>
-                    <a href="/accounts/login/" class="hover:text-blue-200"><i class="fas fa-sign-in-alt"></i> Login</a>
+                    <a href="/sugestoes/" class="hover:text-blue-200 transition"><i class="fas fa-lightbulb"></i> Sugerir</a>
                 </div>
+                <a href="/accounts/login/" class="hover:text-blue-200 transition"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <form action="/lista/" method="get" class="hidden md:block relative" id="searchForm">
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
+                        <input type="text" name="q" id="searchInput" placeholder="Pesquisar ameaça..." autocomplete="off" class="bg-blue-700 text-white placeholder-gray-300 rounded-full py-1.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-white">
+                        <div id="searchSuggestions" class="absolute top-full left-0 right-0 bg-white text-gray-800 rounded-lg shadow-lg mt-1 hidden z-50"></div>
+                    </div>
+                </form>
             </div>
         </div>
-        <!-- Barra de pesquisa para telemóvel -->
         <div class="md:hidden px-4 pb-3">
-            <form action="/lista/" method="get">
-                <div class="relative">
-                    <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
-                    <input type="text" name="q" placeholder="Pesquisar ameaça..." class="w-full bg-blue-700 text-white placeholder-gray-300 rounded-full py-1.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-white">
-                </div>
+            <form action="/lista/" method="get" class="relative">
+                <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
+                <input type="text" name="q" placeholder="Pesquisar ameaça..." class="w-full bg-blue-700 text-white placeholder-gray-300 rounded-full py-1.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-white">
             </form>
         </div>
     </nav>
@@ -64,6 +62,39 @@
         const btn = document.getElementById('backToTop');
         window.addEventListener('scroll', () => btn.style.display = window.scrollY > 200 ? 'flex' : 'none');
         btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    </script>
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const suggestionsBox = document.getElementById('searchSuggestions');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const query = this.value;
+                if (query.length < 2) {
+                    suggestionsBox.classList.add('hidden');
+                    return;
+                }
+                fetch(`/api/sugestao-nomes/?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length === 0) {
+                            suggestionsBox.classList.add('hidden');
+                            return;
+                        }
+                        suggestionsBox.innerHTML = data.map(name => `<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectSuggestion('${name.replace(/'/g, "\\'")}')">${name}</div>`).join('');
+                        suggestionsBox.classList.remove('hidden');
+                    });
+            });
+            window.selectSuggestion = function(name) {
+                searchInput.value = name;
+                suggestionsBox.classList.add('hidden');
+                document.getElementById('searchForm').submit();
+            };
+            document.addEventListener('click', function(e) {
+                if (searchInput && suggestionsBox && !searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+                    suggestionsBox.classList.add('hidden');
+                }
+            });
+        }
     </script>
 </body>
 </html>
